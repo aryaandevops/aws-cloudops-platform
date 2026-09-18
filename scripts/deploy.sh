@@ -55,12 +55,24 @@ aws autoscaling update-auto-scaling-group \
 
 echo "Updated ASG to Launch Template version: ${NEW_VERSION}"
 
-REFRESH_ID=$(aws autoscaling start-instance-refresh \
+CURRENT_REFRESH=$(aws autoscaling describe-instance-refreshes \
   --auto-scaling-group-name "$ASG_NAME" \
-  --preferences MinHealthyPercentage=100,InstanceWarmup=120 \
   --region "$AWS_REGION" \
-  --query 'InstanceRefreshId' \
+  --query 'InstanceRefreshes[?Status==`Pending` || Status==`InProgress`].InstanceRefreshId | [0]' \
   --output text)
 
-echo "Instance refresh started: ${REFRESH_ID}"
-echo "Deployment started successfully."
+if [ "$CURRENT_REFRESH" != "None" ] && [ -n "$CURRENT_REFRESH" ]; then
+  echo "Instance refresh already in progress: ${CURRENT_REFRESH}"
+  echo "Skipping new instance refresh."
+else
+  REFRESH_ID=$(aws autoscaling start-instance-refresh \
+    --auto-scaling-group-name "$ASG_NAME" \
+    --preferences MinHealthyPercentage=100,InstanceWarmup=120 \
+    --region "$AWS_REGION" \
+    --query 'InstanceRefreshId' \
+    --output text)
+
+  echo "Instance refresh started: ${REFRESH_ID}"
+fi
+
+echo "Deployment completed successfully."
