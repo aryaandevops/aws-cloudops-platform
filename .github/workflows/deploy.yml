@@ -1,4 +1,4 @@
-name: CloudOps OIDC Claims Test
+name: CloudOps CI/CD
 
 on:
   push:
@@ -9,39 +9,42 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: aws-cloudops-app
+
 jobs:
-  oidc-test:
+  build-and-push:
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
 
     steps:
-      - name: Inspect OIDC claims
-        shell: bash
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::012646746635:role/aws-cloudops-github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          set -e
+          docker build \
+            -t $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            ./application
 
-          TOKEN=$(curl -sS \
-            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" \
-            | python3 -c 'import sys,json; print(json.load(sys.stdin)["value"])')
-
-          PAYLOAD=$(echo "$TOKEN" | cut -d. -f2)
-
-          python3 - "$PAYLOAD" <<'PY'
-          import sys
-          import json
-          import base64
-
-          payload = sys.argv[1]
-          payload += "=" * (-len(payload) % 4)
-
-          claims = json.loads(
-              base64.urlsafe_b64decode(payload).decode()
-          )
-
-          print("iss:", claims.get("iss"))
-          print("aud:", claims.get("aud"))
-          print("sub:", claims.get("sub"))
-          print("repository:", claims.get("repository"))
-          print("ref:", claims.get("ref"))
-          print("event_name:", claims.get("event_name"))
-          PY
+      - name: Push Docker image to ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker push \
+            $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
