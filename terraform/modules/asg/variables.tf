@@ -43,3 +43,8 @@ variable "target_group_arn" {
   description = "ALB target group ARN"
   type        = string
 }
+
+variable "app_image_tag" {
+  description = "Docker image tag to deploy"
+  type        = string
+}

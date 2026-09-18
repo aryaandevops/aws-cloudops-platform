@@ -51,7 +51,7 @@ resource "aws_launch_template" "app" {
 
     REGION="us-east-1"
     ECR_REGISTRY="012646746635.dkr.ecr.us-east-1.amazonaws.com"
-    IMAGE="$ECR_REGISTRY/aws-cloudops-app:2.0"
+    IMAGE="$ECR_REGISTRY/aws-cloudops-app:${var.app_image_tag}"
 
     DB_HOST=$(aws ssm get-parameter \
       --name "/cloudops/dev/db-host" \

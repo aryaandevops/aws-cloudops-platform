@@ -42,3 +42,9 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "app_image_tag" {
+  description = "Docker image tag to deploy"
+  type        = string
+  default     = "2.0"
+}

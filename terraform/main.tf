@@ -67,4 +67,5 @@ module "asg" {
 
   instance_type = "t3.micro"
   ami_id        = "ami-025d99823a4caad37"
+  app_image_tag = var.app_image_tag
 }
