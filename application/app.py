@@ -47,10 +47,10 @@ def db_health():
             "status": "connected"
         }
 
-except Exception:
-    return {
-        "status": "database connection failed"
-    }, 500
+    except Exception:
+        return {
+            "status": "database connection failed"
+        }, 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
