@@ -71,7 +71,7 @@ jobs:
         working-directory: terraform
         run: terraform init
 
-- name: Terraform Plan
+      - name: Terraform Plan
         working-directory: terraform
         env:
           TF_VAR_app_image_tag: ${{ github.sha }}
