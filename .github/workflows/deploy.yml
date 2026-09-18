@@ -1,4 +1,4 @@
-name: CloudOps CI/CD
+name: CloudOps OIDC Test
 
 on:
   push:
@@ -9,42 +9,16 @@ permissions:
   id-token: write
   contents: read
 
-env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: aws-cloudops-app
-
 jobs:
-  build-and-push:
-    name: Build and Push Docker Image
+  oidc-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::012646746635:role/aws-cloudops-github-actions-role
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build Docker image
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+      - name: Check GitHub OIDC environment
         run: |
-          docker build \
-            -t $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            ./application
-
-      - name: Push Docker image to ECR
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker push \
-            $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Branch ref: $GITHUB_REF"
+          echo "Event: $GITHUB_EVENT_NAME"
+          echo "Actor: $GITHUB_ACTOR"
+          echo "OIDC request URL exists: ${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"
+          echo "OIDC token request token exists: ${ACTIONS_ID_TOKEN_REQUEST_TOKEN:+yes}"
