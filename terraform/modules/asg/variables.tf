@@ -13,23 +13,33 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "Subnet ID for EC2"
+variable "subnet_ids" {
+  description = "Subnets for the Auto Scaling Group"
+  type        = list(string)
+}
+
+variable "ec2_security_group_id" {
+  description = "EC2 security group ID"
   type        = string
 }
 
 variable "instance_profile_name" {
-  description = "IAM instance profile name"
+  description = "EC2 IAM instance profile"
   type        = string
 }
 
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "m7i-flex.large"
+  default     = "t3.micro"
 }
 
-variable "alb_security_group_id" {
-  description = "Security group ID of the Application Load Balancer"
+variable "ami_id" {
+  description = "AMI ID for the launch template"
+  type        = string
+}
+
+variable "target_group_arn" {
+  description = "ALB target group ARN"
   type        = string
 }

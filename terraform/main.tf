@@ -22,8 +22,8 @@ module "ec2" {
   vpc_id                = module.vpc.vpc_id
   subnet_id             = module.vpc.public_subnet_ids[0]
   instance_profile_name = module.iam.ec2_instance_profile_name
-
-  instance_type = "t3.micro"
+  alb_security_group_id = module.alb.alb_security_group_id
+  instance_type         = "t3.micro"
 }
 
 module "rds" {
@@ -36,4 +36,35 @@ module "rds" {
 
   db_username = var.db_username
   db_password = var.db_password
+}
+
+module "alb" {
+  source = "./modules/alb"
+
+  project_name          = var.project_name
+  environment           = var.environment
+  vpc_id                = module.vpc.vpc_id
+  public_subnet_ids     = module.vpc.public_subnet_ids
+  ec2_security_group_id = module.ec2.security_group_id
+  ec2_instance_id       = module.ec2.instance_id
+}
+
+output "alb_dns_name" {
+  description = "Application Load Balancer DNS name"
+  value       = module.alb.alb_dns_name
+}
+
+module "asg" {
+  source = "./modules/asg"
+
+  project_name          = var.project_name
+  environment           = var.environment
+  vpc_id                = module.vpc.vpc_id
+  subnet_ids            = module.vpc.public_subnet_ids
+  ec2_security_group_id = module.ec2.security_group_id
+  instance_profile_name = module.iam.ec2_instance_profile_name
+  target_group_arn      = module.alb.target_group_arn
+
+  instance_type = "t3.micro"
+  ami_id        = "ami-025d99823a4caad37"
 }

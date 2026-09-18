@@ -3,6 +3,7 @@
 *.tfstate
 *.tfstate.*
 terraform.tfvars
+**/.terraform.lock.hcl
 
 # AWS credentials and keys
 .aws/
@@ -26,3 +27,6 @@ terraform.tfvars
 # OS files
 .DS_Store
 Thumbs.db
+
+# Terraform module lock files
+**/.terraform.lock.hcl
