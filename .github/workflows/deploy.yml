@@ -1,0 +1,28 @@
+name: CloudOps CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t aws-cloudops-app:${{ github.sha }} \
+            ./application
+
+      - name: Show image
+        run: |
+          docker images aws-cloudops-app
