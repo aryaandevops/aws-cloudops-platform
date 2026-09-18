@@ -31,6 +31,15 @@ USER_DATA=$(aws ec2 describe-launch-template-versions \
 
 DECODED_USER_DATA=$(printf '%s' "$USER_DATA" | base64 -d)
 
+if ! printf '%s' "$DECODED_USER_DATA" | grep -q "prometheus-node-exporter"; then
+  DECODED_USER_DATA="${DECODED_USER_DATA}
+apt-get update -y
+apt-get install -y prometheus-node-exporter
+systemctl enable prometheus-node-exporter
+systemctl restart prometheus-node-exporter
+"
+fi
+
 UPDATED_USER_DATA=$(printf '%s' "$DECODED_USER_DATA" | sed \
   -E "s#(aws-cloudops-app:)[^\"[:space:]]+#\1${IMAGE_TAG}#g")
 
