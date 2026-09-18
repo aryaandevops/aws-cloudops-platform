@@ -31,3 +31,14 @@ variable "availability_zones" {
     "us-east-1b"
   ]
 }
+variable "db_username" {
+  description = "RDS database username"
+  type        = string
+  sensitive   = true
+}
+
+variable "db_password" {
+  description = "RDS database password"
+  type        = string
+  sensitive   = true
+}

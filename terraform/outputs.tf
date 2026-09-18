@@ -32,3 +32,23 @@ output "ec2_security_group_id" {
   description = "EC2 security group ID"
   value       = module.ec2.security_group_id
 }
+
+output "rds_instance_id" {
+  description = "RDS instance identifier"
+  value       = module.rds.db_instance_id
+}
+
+output "rds_endpoint" {
+  description = "RDS endpoint"
+  value       = module.rds.db_endpoint
+}
+
+output "rds_port" {
+  description = "RDS PostgreSQL port"
+  value       = module.rds.db_port
+}
+
+output "rds_security_group_id" {
+  description = "RDS security group ID"
+  value       = module.rds.security_group_id
+}

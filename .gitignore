@@ -13,6 +13,9 @@ terraform.tfvars
 .env
 .env.*
 
+# Python virtual environment
+.venv/
+
 # Logs
 *.log
 
