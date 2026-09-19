@@ -13,24 +13,24 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "Subnet ID for EC2"
+variable "vpc_cidr" {
+  description = "VPC CIDR"
   type        = string
 }
 
-variable "instance_profile_name" {
-  description = "IAM instance profile name"
+variable "subnet_id" {
+  description = "Public subnet for monitoring instance"
   type        = string
 }
+
+variable "app_security_group_id" {
+  description = "Application EC2 security group ID"
+  type        = string
+}
+
 
 variable "instance_type" {
-  description = "EC2 instance type"
+  description = "Monitoring instance type"
   type        = string
-  default     = "m7i-flex.large"
+  default     = "t3.micro"
 }
-
-variable "alb_security_group_id" {
-  description = "Security group ID of the Application Load Balancer"
-  type        = string
-}
-

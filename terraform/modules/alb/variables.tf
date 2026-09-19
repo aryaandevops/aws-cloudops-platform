@@ -22,7 +22,3 @@ variable "ec2_security_group_id" {
   description = "EC2 security group ID"
   type        = string
 }
-variable "ec2_instance_id" {
-  description = "EC2 instance ID to register with the target group"
-  type        = string
-}

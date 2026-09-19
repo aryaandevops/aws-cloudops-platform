@@ -1,4 +1,11 @@
 resource "aws_launch_template" "app" {
+
+  lifecycle {
+    ignore_changes = [
+      user_data
+    ]
+  }
+
   name_prefix   = "${var.project_name}-${var.environment}-"
   image_id      = var.ami_id
   instance_type = var.instance_type
@@ -121,7 +128,13 @@ resource "aws_autoscaling_group" "app" {
 
   launch_template {
     id      = aws_launch_template.app.id
-    version = aws_launch_template.app.latest_version
+    version = "$Latest"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      launch_template[0].version
+    ]
   }
 
   tag {
